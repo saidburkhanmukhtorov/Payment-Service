@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"payment/config"
-	"payment/storage"
+
+	"github.com/Project_Restaurant/Payment-Service/config"
+	"github.com/Project_Restaurant/Payment-Service/storage"
 	_ "github.com/lib/pq"
 )
 
@@ -28,8 +29,10 @@ func DbConnection() (*Storage, error) {
 		log.Fatal("Error while db ping connection", err)
 		return nil, nil
 	}
+	payment := NewPaymentRepo(db)
 	return &Storage{
-		Db: db,
+		Db:       db,
+		Payments: payment,
 	}, nil
 }
 

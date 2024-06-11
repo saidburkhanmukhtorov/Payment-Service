@@ -2,7 +2,7 @@ package storage
 
 import (
 	"context"
-	pb "payment/genproto/payment"
+	pb "github.com/Project_Restaurant/Payment-Service/genproto/payment"
 )
 
 type StorageI interface {
