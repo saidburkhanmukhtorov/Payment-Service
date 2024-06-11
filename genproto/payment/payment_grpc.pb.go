@@ -33,7 +33,7 @@ type PaymentServiceClient interface {
 	CreatePayment(ctx context.Context, in *CreatePaymentRequest, opts ...grpc.CallOption) (*Payment, error)
 	GetPayment(ctx context.Context, in *GetPaymentRequest, opts ...grpc.CallOption) (*Payment, error)
 	UpdatePayment(ctx context.Context, in *UpdatePaymentRequest, opts ...grpc.CallOption) (*Payment, error)
-	DeletePayment(ctx context.Context, in *DeletePaymentRequest, opts ...grpc.CallOption) (*Payment, error)
+	DeletePayment(ctx context.Context, in *DeletePaymentRequest, opts ...grpc.CallOption) (*DeletePaymentResponse, error)
 	CheckPaymentStatus(ctx context.Context, in *CheckPaymentStatusRequest, opts ...grpc.CallOption) (*Payment, error)
 }
 
@@ -72,8 +72,8 @@ func (c *paymentServiceClient) UpdatePayment(ctx context.Context, in *UpdatePaym
 	return out, nil
 }
 
-func (c *paymentServiceClient) DeletePayment(ctx context.Context, in *DeletePaymentRequest, opts ...grpc.CallOption) (*Payment, error) {
-	out := new(Payment)
+func (c *paymentServiceClient) DeletePayment(ctx context.Context, in *DeletePaymentRequest, opts ...grpc.CallOption) (*DeletePaymentResponse, error) {
+	out := new(DeletePaymentResponse)
 	err := c.cc.Invoke(ctx, PaymentService_DeletePayment_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -97,7 +97,7 @@ type PaymentServiceServer interface {
 	CreatePayment(context.Context, *CreatePaymentRequest) (*Payment, error)
 	GetPayment(context.Context, *GetPaymentRequest) (*Payment, error)
 	UpdatePayment(context.Context, *UpdatePaymentRequest) (*Payment, error)
-	DeletePayment(context.Context, *DeletePaymentRequest) (*Payment, error)
+	DeletePayment(context.Context, *DeletePaymentRequest) (*DeletePaymentResponse, error)
 	CheckPaymentStatus(context.Context, *CheckPaymentStatusRequest) (*Payment, error)
 	mustEmbedUnimplementedPaymentServiceServer()
 }
@@ -115,7 +115,7 @@ func (UnimplementedPaymentServiceServer) GetPayment(context.Context, *GetPayment
 func (UnimplementedPaymentServiceServer) UpdatePayment(context.Context, *UpdatePaymentRequest) (*Payment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePayment not implemented")
 }
-func (UnimplementedPaymentServiceServer) DeletePayment(context.Context, *DeletePaymentRequest) (*Payment, error) {
+func (UnimplementedPaymentServiceServer) DeletePayment(context.Context, *DeletePaymentRequest) (*DeletePaymentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePayment not implemented")
 }
 func (UnimplementedPaymentServiceServer) CheckPaymentStatus(context.Context, *CheckPaymentStatusRequest) (*Payment, error) {
