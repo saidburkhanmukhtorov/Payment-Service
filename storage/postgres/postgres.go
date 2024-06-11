@@ -27,16 +27,13 @@ func DbConnection() (*Storage, error) {
 		log.Fatal("Error while db ping connection", err)
 		return nil, nil
 	}
-	// py := NewPaymentRepo(db)
 	return &Storage{
-		Db:       db,
-
+		Db: db,
 	}, nil
 }
 
-
 func (stg *Storage) Payment() *storage.PaymentI {
-	if stg.Payments == nil{
+	if stg.Payments == nil {
 		stg.Payments = NewPaymentRepo(stg.Db)
 	}
 	return &stg.Payments

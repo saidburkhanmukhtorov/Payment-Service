@@ -113,14 +113,14 @@ func (db *PaymentRepo) GetPaymentById(ctx context.Context, req *pb.GetPaymentReq
 	return &pay, nil
 }
 
-func (db *PaymentRepo) DeletePayment(ctx context.Context,req *pb.DeletePaymentRequest) (*pb.DeletePaymentResponse,error) {
+func (db *PaymentRepo) DeletePayment(ctx context.Context, req *pb.DeletePaymentRequest) (*pb.DeletePaymentResponse, error) {
 	query := `
 		update payment set deleted_at = extract(epoch from NOW()) where id = $1 and deleted_at = 0
 	`
-	_, err := db.Db.Exec(query,req.Id)
-	if err != nil{
-		log.Fatal("Error while deleted payment",err)
-		return nil,nil
+	_, err := db.Db.Exec(query, req.Id)
+	if err != nil {
+		log.Fatal("Error while deleted payment", err)
+		return nil, nil
 	}
-	return &pb.DeletePaymentResponse{Message: "Payment deleted"},nil
+	return &pb.DeletePaymentResponse{Message: "Payment deleted"}, nil
 }
