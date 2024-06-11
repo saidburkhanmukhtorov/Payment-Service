@@ -6,6 +6,7 @@ import (
 	"log"
 	"payment/config"
 	"payment/storage"
+	_ "github.com/lib/pq"
 )
 
 type Storage struct {
