@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+
 	pb "github.com/Project_Restaurant/Payment-Service/genproto/payment"
 )
 
@@ -14,4 +15,5 @@ type PaymentI interface {
 	UpdatePayment(ctx context.Context, req *pb.UpdatePaymentRequest) (*pb.Payment, error)
 	GetPaymentById(ctx context.Context, req *pb.GetPaymentRequest) (*pb.Payment, error)
 	DeletePayment(ctx context.Context, req *pb.DeletePaymentRequest) (*pb.DeletePaymentResponse, error)
+	PayForReservation(ctx context.Context, req *pb.PayForReservationReq) (float64, error)
 }

@@ -148,3 +148,53 @@ func (db *PaymentRepo) DeletePayment(ctx context.Context, req *pb.DeletePaymentR
 	}
 	return &pb.DeletePaymentResponse{Message: "Payment soft deleted"}, nil
 }
+
+// PayForReservation updates the paid amount for a reservation,
+// updates the payment status if fully paid, and returns the
+// remaining balance or 0 if paid in full.
+func (db *PaymentRepo) PayForReservation(ctx context.Context, req *pb.PayForReservationReq) (float64, error) {
+	tx, err := db.Db.BeginTx(ctx, nil)
+	if err != nil {
+		slog.Error("Error starting transaction", "error", err)
+		return 0, err
+	}
+	defer tx.Rollback() // Rollback if any error occurs
+
+	// 1. Get the current payment details
+	var currentPaidAmount, amount float64
+	err = tx.QueryRowContext(ctx, "SELECT paid, amount FROM payments WHERE id = $1 FOR UPDATE", req.Id).Scan(&currentPaidAmount, &amount)
+	if err != nil {
+		slog.Error("Error getting current paid amount", "error", err)
+		return 0, err
+	}
+
+	// 2. Calculate the new paid amount and remaining balance
+	newPaidAmount := currentPaidAmount + req.Paid
+	remainingBalance := amount - newPaidAmount
+
+	// 3. Update the payment record
+	var paymentStatus string
+	if remainingBalance <= 0 {
+		paymentStatus = "paid" // Set status to PAID
+		remainingBalance = 0
+	} else {
+		paymentStatus = "unpaid" // Keep status UNPAID
+	}
+
+	_, err = tx.ExecContext(ctx,
+		"UPDATE payments SET paid = $1, payment_status = $2, payment_method = $3 WHERE id = $4",
+		newPaidAmount, paymentStatus, req.PaymentMethod, req.Id,
+	)
+	if err != nil {
+		slog.Error("Error updating payment", "error", err)
+		return 0, err
+	}
+
+	// 4. Commit the transaction
+	if err := tx.Commit(); err != nil {
+		slog.Error("Error committing transaction", "error", err)
+		return 0, err
+	}
+
+	return remainingBalance, nil
+}
